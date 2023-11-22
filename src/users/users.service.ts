@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -35,8 +35,23 @@ export class UsersService {
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.findOne(id);
+
+    if (updateUserDto.password !== updateUserDto.confirmPassword) {
+      throw new HttpException('Passwords do not match', HttpStatus.BAD_REQUEST);
+    }
+    delete updateUserDto.confirmPassword;
+    updateUserDto.password = await this.hashPassword(updateUserDto.password);
+    Object.assign(user, updateUserDto);
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: user,
+    });
+
+    delete updatedUser.password;
+    return updatedUser;
   }
 
   async remove(id: number) {
