@@ -7,7 +7,7 @@ Content-Type: application/json
 
 {
     "name": "Marly Marley",
-    "email": "marlymarley7@gmail.com",
+    "email": "marlymarley13@gmail.com",
     "password": "123456",
     "admin": false,
     "chavePix": "aaaaaaaaaaaaaaaa"
@@ -34,8 +34,21 @@ Content-Type: application/json
 
 {
     "email": "marlymarley7@gmail.com",
+    "password": "123456"
+}
+###
+@access_token = Bearer {{signin.response.body.access_token}}
+###
+# @name signin
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{
+    "name": "Marly Marley",
+    "email": "marlymarley11@gmail.com",
     "password": "123456",
-    "confirmPassword": "123456"
+    "confirmPassword": "123456",
+    "chavePix": "aaaaaaasdaaaaaaaaa"
 }
 ###
 @access_token = Bearer {{signin.response.body.access_token}}
