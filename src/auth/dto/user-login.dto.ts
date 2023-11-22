@@ -11,10 +11,4 @@ export class UserLoginDto {
   @IsString()
   @IsNotEmpty()
   password: string;
-
-  @MaxLength(255)
-  @MinLength(6)
-  @IsString()
-  @IsNotEmpty()
-  confirmPassword: string;
 }
