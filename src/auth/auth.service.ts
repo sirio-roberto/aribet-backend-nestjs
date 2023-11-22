@@ -7,10 +7,14 @@ import {
 import { UserLoginDto } from './dto/user-login.dto';
 import { UsersService } from 'src/users/users.service';
 import { compareSync } from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
   async signIn(userLoginDto: UserLoginDto) {
     if (userLoginDto.password !== userLoginDto.confirmPassword) {
@@ -22,7 +26,9 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    delete user.password;
-    return user;
+    const payload = { sub: user.id, username: user.email, admin: user.admin };
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
   }
 }

@@ -1,5 +1,6 @@
 ###
 GET http://localhost:3000/users
+Authorization: {{access_token}}
 ###
 POST http://localhost:3000/users
 Content-Type: application/json
@@ -26,3 +27,16 @@ Content-Type: application/json
     "confirmPassword": "123456",
     "chavePix": "aaaaaaasdaaaaaaaaa"
 }
+###
+# @name signin
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+    "email": "marlymarley7@gmail.com",
+    "password": "123456",
+    "confirmPassword": "123456"
+}
+###
+@access_token = Bearer {{signin.response.body.access_token}}
+###

@@ -1,5 +1,6 @@
 # variables
 .env
+*/auth/constants.ts
 
 # compiled output
 /dist
