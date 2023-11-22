@@ -45,7 +45,7 @@ Content-Type: application/json
 
 {
     "name": "Marly Marley",
-    "email": "marlymarley11@gmail.com",
+    "email": "marlymarley14@gmail.com",
     "password": "123456",
     "confirmPassword": "123456",
     "chavePix": "aaaaaaasdaaaaaaaaa"
@@ -53,3 +53,5 @@ Content-Type: application/json
 ###
 @access_token = Bearer {{signin.response.body.access_token}}
 ###
+POST http://localhost:3000/users/13/setAdmin
+Authorization: {{access_token}}

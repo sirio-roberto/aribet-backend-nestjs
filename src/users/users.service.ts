@@ -71,8 +71,18 @@ export class UsersService {
     } catch {}
   }
 
-  async hashPassword(password: string) {
+  private async hashPassword(password: string) {
     const saltOrRounds = 10;
     return await bcrypt.hash(password, saltOrRounds);
+  }
+
+  async toggleAdmin(id: number) {
+    const user = await this.findOne(id);
+    user.admin = !user.admin;
+    await this.prisma.user.update({
+      where: { id, active: true },
+      data: user,
+    });
+    return user;
   }
 }

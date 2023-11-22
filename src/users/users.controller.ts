@@ -53,4 +53,11 @@ export class UsersController {
   remove(@Param('id', new ParseIntPipe()) id: number) {
     this.usersService.remove(id);
   }
+
+  @AdminOnly()
+  @HttpCode(HttpStatus.OK)
+  @Post(':id/setAdmin')
+  setAdmin(@Param('id', new ParseIntPipe()) id: number) {
+    return this.usersService.toggleAdmin(id);
+  }
 }
