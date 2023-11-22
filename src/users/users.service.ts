@@ -35,6 +35,12 @@ export class UsersService {
     return user;
   }
 
+  findOneByEmail(email: string) {
+    return this.prisma.user.findUniqueOrThrow({
+      where: { email, active: true },
+    });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     const user = await this.findOne(id);
 
