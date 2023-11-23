@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateBetDto } from './dto/create-bet.dto';
 import { UpdateBetDto } from './dto/update-bet.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -13,6 +13,9 @@ export class BetsService {
 
   async create(createBetDto: CreateBetDto) {
     const result = await this.resultsService.getTodaysResult();
+    if (result.time) {
+      throw new BadRequestException('Bet time is up');
+    }
     createBetDto.resultId = result.id;
 
     return this.prisma.bet.create({

@@ -33,7 +33,7 @@ export class ResultsService {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    return this.prisma.bet.findFirst({
+    return this.prisma.result.findFirst({
       where: {
         createdAt: {
           gte: startOfDay,
@@ -41,5 +41,14 @@ export class ResultsService {
         },
       },
     });
+  }
+
+  async setTime(date: Date) {
+    const result = await this.getTodaysResult();
+    const updatedResult = await this.prisma.result.update({
+      where: { id: result.id },
+      data: { time: date },
+    });
+    return updatedResult;
   }
 }

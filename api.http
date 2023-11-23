@@ -55,3 +55,23 @@ Content-Type: application/json
 ###
 POST http://localhost:3000/users/13/setAdmin
 Authorization: {{access_token}}
+###
+GET http://localhost:3000/bets/today
+###
+POST http://localhost:3000/bets
+Content-Type: application/json
+
+{
+    "time": "{{$localDatetime iso8601}}",
+    "description": "Test",
+    "userId": 10
+}
+###
+GET http://localhost:3000/results/today
+###
+POST http://localhost:3000/results/today
+Content-Type: application/json
+
+{
+    "time": "{{$localDatetime iso8601}}"
+}
