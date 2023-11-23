@@ -5,6 +5,15 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class ResultsService {
   constructor(private prisma: PrismaService) {}
 
+  async getTodaysWithBets() {
+    const result = await this.getTodaysResult();
+    const linkedBets = await this.prisma.bet.findMany({
+      where: { resultId: result.id },
+    });
+
+    return Object.assign(result, { bets: linkedBets });
+  }
+
   async getTodaysResult() {
     const result = await this.findOne(new Date());
     return result ?? (await this.create());
