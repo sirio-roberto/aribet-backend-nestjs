@@ -11,12 +11,13 @@ export class BetsService {
     private resultsService: ResultsService,
   ) {}
 
-  async create(createBetDto: CreateBetDto) {
+  async create(createBetDto: CreateBetDto, userId: number) {
     const result = await this.resultsService.getTodaysResult();
     if (result.time) {
       throw new BadRequestException('Bet time is up');
     }
     createBetDto.resultId = result.id;
+    createBetDto.userId = userId;
 
     return this.prisma.bet.create({
       data: createBetDto,

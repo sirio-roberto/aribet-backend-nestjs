@@ -39,6 +39,7 @@ export class AuthGuard implements CanActivate {
     }
 
     const user = payload;
+    request.user = user;
     if (isAdmin && !user.admin) {
       throw new ForbiddenException('User is not an admin');
     }
