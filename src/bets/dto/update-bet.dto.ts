@@ -1,13 +1,13 @@
 import {
-  IsDate,
   IsNotEmpty,
   MaxLength,
   IsString,
   IsOptional,
+  IsDateString,
 } from 'class-validator';
 
 export class UpdateBetDto {
-  @IsDate()
+  @IsDateString()
   @IsNotEmpty()
   time: Date;
 

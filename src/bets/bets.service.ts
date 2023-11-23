@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateBetDto } from './dto/create-bet.dto';
 import { UpdateBetDto } from './dto/update-bet.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -16,6 +20,29 @@ export class BetsService {
     if (result.time) {
       throw new BadRequestException('Bet time is up');
     }
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const todaysBet = await this.prisma.bet.findFirst({
+      where: {
+        createdAt: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+        userId,
+      },
+    });
+
+    if (todaysBet) {
+      throw new BadRequestException(
+        'You have already bet today. Bet id: ' + todaysBet.id,
+      );
+    }
+
     createBetDto.resultId = result.id;
     createBetDto.userId = userId;
 
@@ -45,14 +72,18 @@ export class BetsService {
     return this.prisma.bet.findUniqueOrThrow({ where: { id } });
   }
 
-  update(id: number, updateBetDto: UpdateBetDto) {
+  async update(id: number, updateBetDto: UpdateBetDto, userId: number) {
+    try {
+      await this.prisma.bet.findUniqueOrThrow({
+        where: { id, userId },
+      });
+    } catch {
+      throw new UnauthorizedException("You cannot update other user's bet");
+    }
+
     return this.prisma.bet.update({
       where: { id },
       data: updateBetDto,
     });
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} bet`;
   }
 }

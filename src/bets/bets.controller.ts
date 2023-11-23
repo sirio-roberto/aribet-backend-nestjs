@@ -38,11 +38,13 @@ export class BetsController {
     return this.betsService.findOne(id);
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(
     @Param('id', new ParseIntPipe()) id: number,
     @Body() updateBetDto: UpdateBetDto,
+    @Request() req: ExpressRequest | any,
   ) {
-    return this.betsService.update(id, updateBetDto);
+    return this.betsService.update(id, updateBetDto, req.user.sub);
   }
 }
