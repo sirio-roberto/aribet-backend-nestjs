@@ -2,13 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { CreateBetDto } from './dto/create-bet.dto';
 import { UpdateBetDto } from './dto/update-bet.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ResultsService } from 'src/results/results.service';
 
 @Injectable()
 export class BetsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private resultsService: ResultsService,
+  ) {}
 
-  create(createBetDto: CreateBetDto) {
-    return 'This action adds a new bet';
+  async create(createBetDto: CreateBetDto) {
+    const result = await this.resultsService.getTodaysResult();
+    createBetDto.resultId = result.id;
+
+    return this.prisma.bet.create({
+      data: createBetDto,
+    });
   }
 
   findAll(date: Date) {
@@ -29,11 +38,14 @@ export class BetsService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} bet`;
+    return this.prisma.bet.findUniqueOrThrow({ where: { id } });
   }
 
   update(id: number, updateBetDto: UpdateBetDto) {
-    return `This action updates a #${id} bet`;
+    return this.prisma.bet.update({
+      where: { id },
+      data: updateBetDto,
+    });
   }
 
   remove(id: number) {

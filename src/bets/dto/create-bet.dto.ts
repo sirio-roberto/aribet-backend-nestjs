@@ -1,5 +1,5 @@
 import {
-  IsDate,
+  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 
 export class CreateBetDto {
-  @IsDate()
+  @IsDateString()
   @IsNotEmpty()
   time: Date;
 
@@ -19,9 +19,9 @@ export class CreateBetDto {
 
   @IsOptional()
   @IsNumber()
-  userId?: number;
+  userId: number;
 
   @IsOptional()
   @IsNumber()
-  resultId?: number;
+  resultId: number;
 }
