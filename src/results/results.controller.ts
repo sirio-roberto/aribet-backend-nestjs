@@ -22,4 +22,9 @@ export class ResultsController {
   setTodaysTime(@Body() timeObj: Record<string, Date>) {
     return this.resultsService.setTime(timeObj.time);
   }
+
+  @Get('today/winner')
+  getwinner() {
+    return this.resultsService.getWinner(true);
+  }
 }

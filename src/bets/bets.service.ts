@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateBetDto } from './dto/create-bet.dto';
@@ -40,6 +41,21 @@ export class BetsService {
     if (todaysBet) {
       throw new BadRequestException(
         'You have already bet today. Bet id: ' + todaysBet.id,
+      );
+    }
+
+    const betWithSameTime = await this.prisma.bet.findFirst({
+      where: {
+        time: createBetDto.time,
+        createdAt: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+    });
+    if (betWithSameTime) {
+      throw new InternalServerErrorException(
+        'There is already a bet with this value',
       );
     }
 
