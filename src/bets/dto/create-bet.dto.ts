@@ -1,5 +1,4 @@
 import {
-  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -8,9 +7,9 @@ import {
 } from 'class-validator';
 
 export class CreateBetDto {
-  @IsDateString()
   @IsNotEmpty()
-  time: Date;
+  @IsString()
+  time: string;
 
   @MaxLength(255)
   @IsString()

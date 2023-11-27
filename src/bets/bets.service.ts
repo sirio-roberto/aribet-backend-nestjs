@@ -8,6 +8,7 @@ import { CreateBetDto } from './dto/create-bet.dto';
 import { UpdateBetDto } from './dto/update-bet.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ResultsService } from 'src/results/results.service';
+import { isDate } from 'class-validator';
 
 @Injectable()
 export class BetsService {
@@ -17,6 +18,9 @@ export class BetsService {
   ) {}
 
   async create(createBetDto: CreateBetDto, userId: number) {
+    if (!isDate(createBetDto.time)) {
+      createBetDto.time = this.fixDate(createBetDto.time);
+    }
     const result = await this.resultsService.getTodaysResult();
     if (result.time) {
       throw new BadRequestException('Bet time is up');
@@ -97,9 +101,26 @@ export class BetsService {
       throw new UnauthorizedException("You cannot update other user's bet");
     }
 
+    if (!isDate(updateBetDto.time)) {
+      updateBetDto.time = this.fixDate(updateBetDto.time);
+    }
+
     return this.prisma.bet.update({
       where: { id },
       data: updateBetDto,
     });
+  }
+
+  // method used to set the date of the time fields when users submit only the hours and minutes
+  private fixDate(time: string): string {
+    const timeArray = time.split(':');
+    const hours = parseInt(timeArray[0]);
+    const mins = parseInt(timeArray[1]);
+
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(mins);
+
+    return date.toISOString();
   }
 }
