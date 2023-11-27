@@ -33,6 +33,12 @@ export class BetsController {
     return this.betsService.findAll(new Date());
   }
 
+  @UseGuards(AuthGuard)
+  @Get('hasBetToday')
+  hasBetDay(@Request() req: ExpressRequest | any): Promise<boolean> {
+    return this.betsService.hasBetToday(req.user.sub);
+  }
+
   @Get(':id')
   findOne(@Param('id', new ParseIntPipe()) id: number) {
     return this.betsService.findOne(id);

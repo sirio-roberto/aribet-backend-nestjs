@@ -26,6 +26,25 @@ export class BetsService {
       throw new BadRequestException('Bet time is up');
     }
 
+    if (await this.hasBetToday(userId)) {
+      throw new BadRequestException('You already bet today');
+    }
+
+    if (await this.hasDuplicateBet(createBetDto.time)) {
+      throw new InternalServerErrorException(
+        'There is already a bet with this value',
+      );
+    }
+
+    createBetDto.resultId = result.id;
+    createBetDto.userId = userId;
+
+    return this.prisma.bet.create({
+      data: createBetDto,
+    });
+  }
+
+  async hasBetToday(userId: number): Promise<boolean> {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
@@ -42,33 +61,27 @@ export class BetsService {
       },
     });
 
-    if (todaysBet) {
-      throw new BadRequestException(
-        'You have already bet today. Bet id: ' + todaysBet.id,
-      );
-    }
+    return !!todaysBet;
+  }
+
+  private async hasDuplicateBet(time: Date | string) {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
 
     const betWithSameTime = await this.prisma.bet.findFirst({
       where: {
-        time: createBetDto.time,
+        time: time,
         createdAt: {
           gte: startOfDay,
           lte: endOfDay,
         },
       },
     });
-    if (betWithSameTime) {
-      throw new InternalServerErrorException(
-        'There is already a bet with this value',
-      );
-    }
 
-    createBetDto.resultId = result.id;
-    createBetDto.userId = userId;
-
-    return this.prisma.bet.create({
-      data: createBetDto,
-    });
+    return !!betWithSameTime;
   }
 
   findAll(date: Date) {
