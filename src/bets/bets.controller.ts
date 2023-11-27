@@ -28,7 +28,7 @@ export class BetsController {
     return this.betsService.create(createBetDto, req.user.sub);
   }
 
-  @Get('today')
+  @Get('today/all')
   findAll() {
     return this.betsService.findAll(new Date());
   }
@@ -39,9 +39,10 @@ export class BetsController {
     return this.betsService.hasBetToday(req.user.sub);
   }
 
-  @Get(':id')
-  findOne(@Param('id', new ParseIntPipe()) id: number) {
-    return this.betsService.findOne(id);
+  @UseGuards(AuthGuard)
+  @Get('today')
+  findOne(@Request() req: ExpressRequest | any) {
+    return this.betsService.findTodaysBet(req.user.sub);
   }
 
   @UseGuards(AuthGuard)

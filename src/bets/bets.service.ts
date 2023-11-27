@@ -44,14 +44,14 @@ export class BetsService {
     });
   }
 
-  async hasBetToday(userId: number): Promise<boolean> {
+  findTodaysBet(userId: number) {
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
 
-    const todaysBet = await this.prisma.bet.findFirst({
+    return this.prisma.bet.findFirst({
       where: {
         createdAt: {
           gte: startOfDay,
@@ -60,8 +60,10 @@ export class BetsService {
         userId,
       },
     });
+  }
 
-    return !!todaysBet;
+  async hasBetToday(userId: number): Promise<boolean> {
+    return !!(await this.findTodaysBet(userId));
   }
 
   private async hasDuplicateBet(time: Date | string) {
