@@ -131,8 +131,7 @@ export class BetsService {
     const mins = parseInt(timeArray[1]);
 
     const date = new Date();
-    date.setHours(hours);
-    date.setMinutes(mins);
+    date.setHours(hours, mins, 0, 0);
 
     return date.toISOString();
   }
