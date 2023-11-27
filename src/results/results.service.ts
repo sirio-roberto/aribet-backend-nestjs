@@ -111,7 +111,7 @@ export class ResultsService {
       hour: 'numeric',
       minute: 'numeric',
       hour12: false,
-      timeZone: 'America/Sao_Paulo', // GMT-3 timezone
+      timeZone: 'UTC', // GMT-3 timezone
     });
   }
 }
