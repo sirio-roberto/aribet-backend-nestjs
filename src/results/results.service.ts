@@ -62,28 +62,47 @@ export class ResultsService {
       }
       const resultTime = resultWithBets.time.getTime();
 
-      const winner = resultWithBets.bets.reduce((current, next) => {
-        const currentTime = current.time.getTime();
-        const nextTime = next.time.getTime();
+      const timeDiffs = resultWithBets.bets.map((bet) => {
+        const time = bet.time.getTime();
+        return Math.abs(resultTime - time);
+      });
+      const minTime = Math.min(...timeDiffs);
 
-        const currentDiff = Math.abs(currentTime - resultTime);
-        const nextDiff = Math.abs(nextTime - resultTime);
-
-        if (currentDiff < nextDiff) {
-          return current;
-        }
-        return next;
+      const winners = resultWithBets.bets.filter((bet) => {
+        const time = bet.time.getTime();
+        return Math.abs(resultTime - time) === minTime;
       });
 
-      const user = await this.prisma.user.findUniqueOrThrow({
-        where: { id: winner.userId },
+      const winnerIds: number[] = winners.map((bet) => bet.userId);
+
+      const users = await this.prisma.user.findMany({
+        where: {
+          id: {
+            in: winnerIds,
+          },
+        },
       });
-      return {
-        name: user.name,
-        finalTime: this.getFormattedDate(resultWithBets.time),
-        guessedTime: this.getFormattedDate(winner.time),
-        description: winner.description,
-      };
+
+      const usersMap = new Map();
+      users.forEach((user) => usersMap.set(user.id, user.name));
+
+      const result = winners.map((bet) => {
+        const name = usersMap.get(bet.userId);
+        const finalTime = this.getFormattedDate(resultWithBets.time);
+        const guessedTime = this.getFormattedDate(bet.time);
+        const description = bet.description;
+
+        return {
+          betId: bet.id,
+          userId: bet.userId,
+          name,
+          finalTime,
+          guessedTime,
+          description,
+        };
+      });
+
+      return result;
     }
   }
 
@@ -91,7 +110,6 @@ export class ResultsService {
     return date.toLocaleString('en-US', {
       hour: 'numeric',
       minute: 'numeric',
-      second: 'numeric',
       hour12: false,
       timeZone: 'America/Sao_Paulo', // GMT-3 timezone
     });
