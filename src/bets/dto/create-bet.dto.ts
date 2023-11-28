@@ -8,8 +8,7 @@ import {
 
 export class CreateBetDto {
   @IsNotEmpty()
-  @IsString()
-  time: string;
+  time: string | Date;
 
   @MaxLength(255)
   @IsString()

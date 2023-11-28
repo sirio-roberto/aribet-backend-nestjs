@@ -94,6 +94,20 @@ export class BetsService {
     endOfDay.setHours(23, 59, 59, 999);
 
     return this.prisma.bet.findMany({
+      select: {
+        id: true,
+        time: true,
+        description: true,
+        createdAt: true,
+        updatedAt: true,
+        userId: true,
+        resultId: true,
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
       where: {
         createdAt: {
           gte: startOfDay,

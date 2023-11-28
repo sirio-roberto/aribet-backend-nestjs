@@ -78,6 +78,7 @@ export class ResultsService {
         return Math.abs(resultTime - time) === minTime;
       });
 
+      // TODO: refactor here to use one select instead of this whole workaround
       const winnerIds: number[] = winners.map((bet) => bet.userId);
 
       const users = await this.prisma.user.findMany({
