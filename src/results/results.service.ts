@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { isDate } from 'class-validator';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -43,7 +44,11 @@ export class ResultsService {
     });
   }
 
-  async setTime(date: Date) {
+  async setTime(date: Date | string) {
+    if (!isDate(date) && date) {
+      date = this.fixDate(date);
+    }
+
     const result = await this.getTodaysResult();
     const updatedResult = await this.prisma.result.update({
       where: { id: result.id },
@@ -113,5 +118,17 @@ export class ResultsService {
       hour12: false,
       timeZone: 'UTC', // GMT-3 timezone
     });
+  }
+
+  // method used to set the date of the time fields when users submit only the hours and minutes
+  private fixDate(time: string): string {
+    const timeArray = time.split(':');
+    const hours = parseInt(timeArray[0]);
+    const mins = parseInt(timeArray[1]);
+
+    const date = new Date();
+    date.setHours(hours, mins, 0, 0);
+
+    return date.toISOString();
   }
 }
