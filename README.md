@@ -9,8 +9,8 @@ This NestJS app serves as a backend for managing bets and users. It includes aut
 1. Clone the Repository:
 
 ```
-git clone <repository-url>
-cd <project-folder>
+git clone git@github.com:sirio-roberto/aribet-backend-nestjs.git
+cd aribet-backend-nestjs
 ```
 
 2. Install Dependencies:
